@@ -10,8 +10,10 @@
     "eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject"
   },
   "dependencies": {
+    "lodash": "^4.17.19",
     "react": "link:../node_modules/react",
     "react-dom": "link:../node_modules/react-dom",
+    "react-icons": "^3.10.0",
     "react-scripts": "link:../node_modules/react-scripts",
     "treeview-component": "link:.."
   },

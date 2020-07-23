@@ -1,7 +1,7 @@
-import { ExampleComponent } from '.'
+import { TreeView } from '.'
 
 describe('ExampleComponent', () => {
   it('is truthy', () => {
-    expect(ExampleComponent).toBeTruthy()
+    expect(TreeView).toBeTruthy()
   })
 })
