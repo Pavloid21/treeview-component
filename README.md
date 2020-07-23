@@ -15,12 +15,12 @@ npm install --save treeview-component
 ```jsx
 import React, { Component } from 'react'
 
-import MyComponent from 'treeview-component'
+import TreeView from 'treeview-component'
 import 'treeview-component/dist/index.css'
 
 class Example extends Component {
   render() {
-    return <MyComponent />
+    return <TreeView />
   }
 }
 ```
