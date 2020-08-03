@@ -9,43 +9,40 @@ class TreeView extends React.Component {
     super(props)
     this.tree = props.tree
     this.nodeView = props.nodeView
-    this.columns = []
-    this.nodeReferencies = []
+    this.state = {
+      ...TreeView.createColumnsData(this.tree)
+    }
   }
 
-  state = {
-    columns: []
-  }
-
-  createColumnsData = (tree) => {
-    this.columns = []
-    this.nodeReferencies = []
+  static createColumnsData = (tree) => {
+    const columns = []
+    const nodeReferencies = []
     const treeWalker = (tree, column = 0, parent = null) => {
-      if (!this.columns[column]) {
-        this.columns.push([])
-        this.nodeReferencies.push([])
+      if (!columns[column]) {
+        columns.push([])
+        nodeReferencies.push([])
       }
-      if (!this.columns[column + 1]) {
-        this.columns.push([])
-        this.nodeReferencies.push([])
+      if (!columns[column + 1]) {
+        columns.push([])
+        nodeReferencies.push([])
       }
       if (tree === null) {
         const obj = {
           children: [],
           parent_node: parent ? parent.node : null,
-          node: `${column}${this.columns[column].length}`
+          node: `${column}${columns[column].length}`
         }
         tree = obj
-        this.columns[column].push(obj)
-        this.nodeReferencies[column].push({
+        columns[column].push(obj)
+        nodeReferencies[column].push({
           parent_node: parent ? parent.node : null
         })
         return undefined
       }
       tree.parent_node = parent ? parent.node : null
-      tree.node = `${column}${this.columns[column].length}`
-      this.columns[column].push(tree)
-      this.nodeReferencies[column].push({
+      tree.node = `${column}${columns[column].length}`
+      columns[column].push(tree)
+      nodeReferencies[column].push({
         parent_node: parent ? parent.node : null
       })
       tree.children.forEach((child) => {
@@ -53,23 +50,28 @@ class TreeView extends React.Component {
       })
     }
     treeWalker(tree)
-    const data = this.columns
-    return data
+    return {
+      columns,
+      nodeReferencies
+    }
   }
 
   drawCurves = () => {
-    document.querySelectorAll('.svg_container').forEach((e) => e.remove())
+    document
+      .querySelectorAll('div[class*="svg_container"]')
+      .forEach((e) => e.remove())
     const pipelineContainer = document.getElementById('tree_wrapper')
+    const { nodeReferencies } = this.state
     this.state.columns.forEach((column, id) => {
       column.forEach((cell, index) => {
         if (id !== this.state.columns.length - 1) {
           const cardElement = ReactDOM.findDOMNode(
-            this.nodeReferencies[id][index].element
+            nodeReferencies[id][index].element
           )
           const childrenElements = []
           this.state.columns[id + 1].map((child, c) => {
             if (child && child.parent_node === cell.node) {
-              childrenElements.push(this.nodeReferencies[id + 1][c].element)
+              childrenElements.push(nodeReferencies[id + 1][c].element)
             }
           })
           const coords = []
@@ -148,26 +150,19 @@ class TreeView extends React.Component {
     })
   }
 
-  componentWillMount() {
-    const newColumns = this.createColumnsData(this.props.tree)
-    console.log('MOUNTED:>> ')
-    this.setState({
-      columns: newColumns
-    })
-  }
-
   componentDidMount() {
     this.drawCurves()
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    console.log('JSON.stringify(prevProps.tree) :>> ', JSON.stringify(prevProps.tree), JSON.stringify(this.props.tree));
-    if (JSON.stringify(prevProps.tree) !== JSON.stringify(this.props.tree)) {
-      console.log('prevProps :>> ', prevProps.tree)
-      const newColumns = this.createColumnsData(this.props.tree)
-      this.setState({
-        columns: newColumns
-      })
+  componentDidUpdate() {
+    console.log('updated:>> ');
+    this.drawCurves()
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    return {
+      ...state,
+      ...TreeView.createColumnsData(props.tree)
     }
   }
 
@@ -175,31 +170,28 @@ class TreeView extends React.Component {
     const NodeView = this.props.nodeView
     const EmptyNode = this.props.emptyNode
     const { nodeViewClasses, showEmptyNodes, emptyNodeProps } = this.props
+    const { nodeReferencies, columns } = this.state
     return (
       <PanZoom {...this.props}>
         <div className={styles.tree} id='tree_wrapper'>
-          {this.state.columns.map((col, i) => {
+          {columns.map((col, i) => {
             return col.length ? (
               <div style={{ display: 'flex' }}>
                 <div key={i} className={styles.tree__column}>
                   {col.map((item, idx) => {
                     return Object.keys(item).length > 3 ? (
                       <NodeView
-                        ref={(el) =>
-                          (this.nodeReferencies[i][idx].element = el)
-                        }
+                        ref={(el) => (nodeReferencies[i][idx].element = el)}
                         id={`card_${i}${idx}`}
                         {...item}
                         styles={nodeViewClasses}
                       />
                     ) : showEmptyNodes ? (
                       <EmptyNode
-                        ref={(el) =>
-                          (this.nodeReferencies[i][idx].element = el)
-                        }
+                        ref={(el) => (nodeReferencies[i][idx].element = el)}
                         styles={nodeViewClasses}
                         data={{
-                          ...this.nodeReferencies[i][idx],
+                          ...nodeReferencies[i][idx],
                           index: idx
                         }}
                         {...emptyNodeProps}

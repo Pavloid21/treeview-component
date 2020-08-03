@@ -2,7 +2,7 @@ import React from 'react'
 
 import TreeView from 'treeview-component'
 import NodeView from './components/NodeView'
-import EmptyNode from './components/EptyNode'
+import EmptyNode from './components/EmptyNode'
 import 'treeview-component/dist/index.css'
 import styles from './classes.module.css'
 
@@ -61,7 +61,7 @@ class App extends React.Component {
   }
 
   addCard = (event, data) => {
-    this.findByNode(data.parent_node, data.index)
+    this.findByNode(data.parent_node, data.index);
     console.log('CLICKED :>> ');
   }
 
