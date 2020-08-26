@@ -76,7 +76,8 @@ class App extends React.Component {
       },
       tree: this.state.tree,
       style: {
-        cursor: 'auto'
+        cursor: 'auto',
+        outline: 'none'
       }
     }
     return <div className="wrapper">
