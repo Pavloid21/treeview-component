@@ -29,6 +29,34 @@ import TreeView from 'treeview-component'
 import 'treeview-component/dist/index.css'
 
 class Example extends Component {
+
+  constructor() {
+    super()
+    this.state = {
+      tree: {
+        node: '00',
+        parent_node: null,
+        title: 'First node',
+        description: 'Some description for node.',
+        children: [
+          {
+            node: '10',
+            parent_node: '00',
+            title: 'Second node',
+            description: 'Some description for node.',
+            children: [null]
+          },
+          {
+            node: '11',
+            parent_node: '00',
+            title: 'Third node',
+            description: 'Some description for node.',
+            children: [null, null]
+          }
+        ]
+      }
+    }
+  }
   
   // ...
 
