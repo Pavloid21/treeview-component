@@ -35,22 +35,21 @@ class App extends React.Component {
     }
   }
 
-  findByNode = (parentNode, index) => {
-    let tree = this.state.tree;
+  addCardFunc = (node, newTree) => {
+    let tree = newTree;
     const walker = (cell) => {
       if (!cell) {
         return
       }
-      if (cell.node === parentNode) {
-        cell.children[index] = {
-          parent_node: cell.node,
-          title: 'Added node',
-          description: 'This node was added by click',
-          children: [null, null],
+      cell.children.forEach((child, id) => {
+        if (child.node === node.node) {
+          cell.children[id] = {
+            parent_node: cell.node,
+            title: 'Added node',
+            description: 'This node was added by click',
+            children: [null, null],
+          }
         }
-        return
-      }
-      cell.children.forEach((child) => {
         walker(child)
       })
     }
@@ -61,8 +60,7 @@ class App extends React.Component {
   }
 
   addCard = (event, data) => {
-    this.findByNode(data.parent_node, data.index);
-    console.log('CLICKED :>> ');
+    this.addCardFunc(data.node, data.newTree);
   }
 
   render() {
@@ -72,11 +70,11 @@ class App extends React.Component {
       nodeViewClasses: styles,
       showEmptyNodes: true,
       emptyNode: EmptyNode,
-      tree: this.state.tree,
       emptyNodeProps: {
         onClick: this.addCard,
         className: styles.add_card
       },
+      tree: this.state.tree,
       style: {
         cursor: 'auto'
       }

@@ -7,7 +7,8 @@ import _ from 'lodash'
 class TreeView extends React.Component {
   constructor(props) {
     super(props)
-    this.tree = props.tree
+    this.tree = {}
+    Object.assign(this.tree, props.tree)
     this.nodeView = props.nodeView
     this.state = {
       ...TreeView.createColumnsData(this.tree)
@@ -17,7 +18,9 @@ class TreeView extends React.Component {
   static createColumnsData = (tree) => {
     const columns = []
     const nodeReferencies = []
-    const treeWalker = (tree, column = 0, parent = null) => {
+    const newTree = {}
+    Object.assign(newTree, tree)
+    const treeWalker = (treeNode, column = 0, parent = null) => {
       if (!columns[column]) {
         columns.push([])
         nodeReferencies.push([])
@@ -26,30 +29,25 @@ class TreeView extends React.Component {
         columns.push([])
         nodeReferencies.push([])
       }
-      if (tree === null) {
-        const obj = {
-          children: [],
-          parent_node: parent ? parent.node : null,
-          node: `${column}${columns[column].length}`
-        }
-        tree = obj
-        columns[column].push(obj)
-        nodeReferencies[column].push({
-          parent_node: parent ? parent.node : null
-        })
-        return undefined
-      }
-      tree.parent_node = parent ? parent.node : null
-      tree.node = `${column}${columns[column].length}`
-      columns[column].push(tree)
+      treeNode.parent_node = parent ? parent.node : null
+      treeNode.node = `${column}${columns[column].length}`
+      columns[column].push(treeNode)
       nodeReferencies[column].push({
-        parent_node: parent ? parent.node : null
+        parent_node: parent ? parent.node : null,
+        node: treeNode
       })
-      tree.children.forEach((child) => {
-        treeWalker(child, column + 1, tree)
+      treeNode.children.forEach((child, id) => {
+        if (child === null) {
+          treeNode.children[id] = {
+            children: [],
+            parent_node: treeNode,
+            node: `${column}${columns[column].length}`
+          }
+        }
+        treeWalker(treeNode.children[id], column + 1, treeNode)
       })
     }
-    treeWalker(tree)
+    treeWalker(newTree)
     return {
       columns,
       nodeReferencies
@@ -87,14 +85,9 @@ class TreeView extends React.Component {
             })
             if (cardElement) {
               const x = cardElement.offsetWidth + cardElement.offsetLeft
-              const y = cardElement.offsetTop
               const center =
                 cardElement.offsetTop + cardElement.offsetHeight / 2
-              if (
-                x !== 0 &&
-                y !== 0 &&
-                !cardElement.classList.contains('add_card')
-              ) {
+              if (x !== 0 && !cardElement.classList.contains('add_card')) {
                 // draw dots and path
                 const svgContainer = document.createElement('div')
                 svgContainer.setAttribute('class', styles.svg_container)
@@ -155,7 +148,6 @@ class TreeView extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log('updated:>> ');
     this.drawCurves()
   }
 
@@ -167,21 +159,29 @@ class TreeView extends React.Component {
   }
 
   render() {
-    const NodeView = this.props.nodeView
-    const EmptyNode = this.props.emptyNode
-    const { nodeViewClasses, showEmptyNodes, emptyNodeProps } = this.props
+    const {
+      nodeView,
+      emptyNode,
+      nodeViewClasses,
+      emptyNodeProps,
+      showEmptyNodes,
+      ...props
+    } = this.props
     const { nodeReferencies, columns } = this.state
+    const NodeView = nodeView
+    const EmptyNode = emptyNode
     return (
-      <PanZoom {...this.props}>
+      <PanZoom {...props}>
         <div className={styles.tree} id='tree_wrapper'>
           {columns.map((col, i) => {
             return col.length ? (
-              <div style={{ display: 'flex' }}>
-                <div key={i} className={styles.tree__column}>
+              <div key={`id_${i}`} style={{ display: 'flex' }}>
+                <div className={styles.tree__column}>
                   {col.map((item, idx) => {
                     return Object.keys(item).length > 3 ? (
                       <NodeView
                         ref={(el) => (nodeReferencies[i][idx].element = el)}
+                        key={`node_${i}${idx}`}
                         id={`card_${i}${idx}`}
                         {...item}
                         styles={nodeViewClasses}
@@ -189,10 +189,11 @@ class TreeView extends React.Component {
                     ) : showEmptyNodes ? (
                       <EmptyNode
                         ref={(el) => (nodeReferencies[i][idx].element = el)}
+                        key={`node_${i}${idx}`}
                         styles={nodeViewClasses}
                         data={{
                           ...nodeReferencies[i][idx],
-                          index: idx
+                          newTree: this.tree
                         }}
                         {...emptyNodeProps}
                       />
