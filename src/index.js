@@ -36,16 +36,18 @@ class TreeView extends React.Component {
         parent_node: parent ? parent.node : null,
         node: treeNode
       })
-      treeNode.children.forEach((child, id) => {
-        if (child === null) {
-          treeNode.children[id] = {
-            children: [],
-            parent_node: treeNode,
-            node: `${column}${columns[column].length}`
+      if (treeNode.children) {
+        treeNode.children.forEach((child, id) => {
+          if (child === null) {
+            treeNode.children[id] = {
+              children: [],
+              parent_node: treeNode,
+              node: `${column}${columns[column].length}`
+            }
           }
-        }
-        treeWalker(treeNode.children[id], column + 1, treeNode)
-      })
+          treeWalker(treeNode.children[id], column + 1, treeNode)
+        })
+      }
     }
     treeWalker(newTree)
     return {
@@ -77,10 +79,11 @@ class TreeView extends React.Component {
             childrenElements.forEach((ce) => {
               if (ce) {
                 const domNode = ReactDOM.findDOMNode(ce)
-                coords.push({
-                  x: domNode.offsetLeft,
-                  y: domNode.offsetTop + domNode.offsetHeight / 2
-                })
+                if (domNode)
+                  coords.push({
+                    x: domNode.offsetLeft,
+                    y: domNode.offsetTop + domNode.offsetHeight / 2
+                  })
               }
             })
             if (cardElement) {
