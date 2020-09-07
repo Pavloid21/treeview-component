@@ -1,7 +1,7 @@
 {
   "name": "treeview-component",
-  "version": "1.0.2",
-  "description": "TreeView for tree data structure representation",
+  "version": "1.0.3",
+  "description": "React TreeView for tree data structure representation",
   "author": "pavloid21",
   "license": "MIT",
   "repository": "pavloid21/treeview-component",
@@ -11,6 +11,15 @@
   "engines": {
     "node": ">=10"
   },
+  "keywords":[
+    "react",
+    "tree diagram",
+    "tree",
+    "treeview",
+    "tree-view",
+    "react-component",
+    "diagram"
+  ],
   "scripts": {
     "build": "microbundle-crl --no-compress --format modern,cjs",
     "start": "microbundle-crl watch --no-compress --format modern,cjs",
