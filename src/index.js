@@ -58,7 +58,7 @@ class TreeView extends React.Component {
 
   drawCurves = () => {
     document
-      .querySelectorAll('div[class*="svg_container"]')
+      .querySelectorAll(`div[class*="${styles.svg_container}"]`)
       .forEach((e) => e.remove())
     const pipelineContainer = document.getElementById('tree_wrapper')
     const { nodeReferencies } = this.state

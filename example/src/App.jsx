@@ -80,9 +80,11 @@ class App extends React.Component {
         outline: 'none'
       }
     }
-    return <div className="wrapper">
+    return (
+      <div className="wrapper">
         <TreeView {...treeProps} />
       </div>
+    )
   }
 }
 
