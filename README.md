@@ -24,6 +24,8 @@ npm install --save treeview-component
 
 ## Usage
 
+[Live demo](https://treeview-component.vercel.app/)
+
 ```jsx
 import React, { Component } from 'react'
 
