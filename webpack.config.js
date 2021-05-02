@@ -10,7 +10,7 @@ const resolveAppPath = (relativePath) =>
   path.resolve(appDirectory, relativePath)
 
 module.exports = {
-  entry: resolveAppPath('src'),
+  entry: resolveAppPath('src') + "/index.tsx",
   output: {
     path: resolveAppPath('dist'),
     filename: 'index.js',
