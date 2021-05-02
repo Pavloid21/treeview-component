@@ -1,6 +1,6 @@
 {
   "name": "treeview-component",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "React TreeView for tree data structure representation",
   "author": "pavloid21",
   "license": "MIT",
@@ -72,6 +72,7 @@
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.3",
     "style-loader": "^1.2.1",
+    "typescript": "^4.2.4",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },

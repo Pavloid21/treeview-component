@@ -4,8 +4,21 @@ import styles from './styles.module.css'
 import { PanZoom } from 'react-easy-panzoom'
 import _ from 'lodash'
 
-class TreeView extends React.Component {
-  constructor(props) {
+interface TreeViewProps {
+  [x: string]: any;
+  nodeView: any;
+  emptyNode: any;
+  nodeViewClasses: any;
+  emptyNodeProps: any;
+  showEmptyNodes: any;
+}
+
+class TreeView extends React.Component<TreeViewProps> {
+  tree: {}
+  nodeView: any
+  state: { columns: any[]; nodeReferencies: any[] }
+  props: TreeViewProps
+  constructor(props: TreeViewProps) {
     super(props)
     this.tree = {}
     Object.assign(this.tree, props.tree)
@@ -105,8 +118,8 @@ class TreeView extends React.Component {
                   _.max(checkPoints) - _.min(checkPoints) >= 12
                     ? _.max(checkPoints) - _.min(checkPoints)
                     : 12
-                circle.setAttribute('width', 160)
-                circle.setAttribute('height', height)
+                circle.setAttribute('width', '160')
+                circle.setAttribute('height', height.toString())
                 circle.setAttribute('viewBox', `0 0 160 ${height}`)
                 circle.setAttribute('version', '1.1')
                 circle.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
