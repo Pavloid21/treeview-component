@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./lib/esm",
+    "jsx": "react-jsx",
+    "typeRoots": ["src/types"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": "src",
+    "noFallthroughCasesInSwitch": true,
+    "composite": true,
+  },
+  "include": ["src", "index.d.ts", "index.ts", "global.d.ts"],
+  "exclude": ["node_modules", "**/__tests__/*", "example"]
+}

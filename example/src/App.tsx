@@ -1,14 +1,14 @@
-import React from 'react'
+import React from 'react';
 
-import TreeView from 'treeview-component'
-import NodeView from './components/NodeView'
-import EmptyNode from './components/EmptyNode'
-import 'treeview-component/dist/index.css'
-import styles from './classes.module.css'
+import {TreeView, TreeNode, TreeViewProps} from 'treeview-component';
+import NodeView from './components/NodeView';
+import EmptyNode from './components/EmptyNode';
+import 'treeview-component/lib/esm/src/styles.module.css';
+import styles from './classes.module.css';
 
-class App extends React.Component {
-  constructor() {
-    super()
+class App extends React.Component<any, {tree: TreeNode}> {
+  constructor(props: any) {
+    super(props);
     this.state = {
       tree: {
         node: '00',
@@ -21,25 +21,25 @@ class App extends React.Component {
             parent_node: '00',
             title: 'Second node',
             description: 'Some description for node.',
-            children: [null]
+            children: [null],
           },
           {
             node: '11',
             parent_node: '00',
             title: 'Third node',
             description: 'Some description for node.',
-            children: [null, null]
-          }
-        ]
-      }
-    }
+            children: [null, null],
+          },
+        ],
+      },
+    };
   }
 
-  addCardFunc = (node, newTree) => {
+  addCardFunc = (node: { node: TreeNode; }, newTree: TreeNode) => {
     let tree = newTree;
-    const walker = (cell) => {
+    const walker = (cell: { children: any[]; node: string; }) => {
       if (!cell) {
-        return
+        return;
       }
       cell.children.forEach((child, id) => {
         if (child.node === node.node) {
@@ -48,23 +48,23 @@ class App extends React.Component {
             title: 'Added node',
             description: 'This node was added by click',
             children: [null, null],
-          }
+          };
         }
-        walker(child)
-      })
-    }
-    walker(tree)
+        walker(child);
+      });
+    };
+    walker(tree);
     this.setState({
-      tree: tree
-    })
-  }
+      tree: tree,
+    });
+  };
 
-  addCard = (event, data) => {
+  addCard = (event: MouseEvent, data: any) => {
     this.addCardFunc(data.node, data.newTree);
-  }
+  };
 
   render() {
-    const treeProps = {
+    const treeProps: TreeViewProps = {
       autoCenter: true,
       nodeView: NodeView,
       nodeViewClasses: styles,
@@ -72,20 +72,20 @@ class App extends React.Component {
       emptyNode: EmptyNode,
       emptyNodeProps: {
         onClick: this.addCard,
-        className: styles.add_card
+        className: styles.add_card,
       },
       tree: this.state.tree,
       style: {
         cursor: 'auto',
-        outline: 'none'
-      }
-    }
+        outline: 'none',
+      },
+    };
     return (
       <div className="wrapper">
         <TreeView {...treeProps} />
       </div>
-    )
+    );
   }
 }
 
-export default App
+export default App;

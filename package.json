@@ -5,9 +5,9 @@
   "author": "pavloid21",
   "license": "MIT",
   "repository": "pavloid21/treeview-component",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "source": "src/index.js",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "types": "lib/esm/index.d.ts",
   "engines": {
     "node": ">=10"
   },
@@ -21,7 +21,9 @@
     "diagram"
   ],
   "scripts": {
-    "build": "webpack --mode production",
+    "build": "yarn build:esm && yarn build:cjs",
+    "build:esm": "tsc && yarn copy-files:esm",
+    "build:cjs": "tsc --module commonjs --outDir lib/cjs && yarn copy-files:cjs",
     "start": "webpack-dev-server --open --config ./webpack.config.js --mode development",
     "prepare": "run-s build",
     "test": "run-s test:unit test:lint test:build",
@@ -30,7 +32,11 @@
     "test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
     "test:watch": "react-scripts test --env=jsdom",
     "predeploy": "cd example && yarn install && yarn run build",
-    "deploy": "gh-pages -d example/build"
+    "deploy": "gh-pages -d example/build",
+    "lint": "tslint -p tsconfig.json",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"src/**/*.tsx\"",
+    "copy-files:esm": "copyfiles -u 1 src/**/*.css lib/esm/src",
+    "copy-files:cjs": "copyfiles -u 1 src/**/*.css lib/cjs/src"
   },
   "peerDependencies": {
     "react": "^16.0.0"
@@ -44,11 +50,15 @@
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-react": "^7.10.4",
     "@babel/register": "^7.11.5",
+    "@types/html-webpack-plugin": "^3.2.6",
+    "@types/react": "^18.0.8",
+    "@types/react-dom": "^18.0.0",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.1.0",
     "babel-plugin-syntax-class-properties": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "clean-webpack-plugin": "^3.0.0",
+    "copyfiles": "^2.4.1",
     "cross-env": "^7.0.2",
     "css-loader": "^4.2.2",
     "enzyme": "^3.11.0",
@@ -64,22 +74,29 @@
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-standard": "^4.0.1",
     "gh-pages": "^2.2.0",
+    "html-webpack-plugin": "^5.5.0",
     "microbundle-crl": "^0.13.10",
     "mini-css-extract-plugin": "^0.11.0",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.0.4",
-    "react": "^16.13.1",
+    "prettier": "^2.6.2",
+    "react": "^18.1.0",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.3",
     "style-loader": "^1.2.1",
+    "ts-loader": "^9.2.9",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.3.0",
+    "typed-scss-modules": "^6.3.0",
     "typescript": "^4.2.4",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
   },
   "files": [
-    "dist"
+    "lib/**/*"
   ],
   "dependencies": {
+    "@types/lodash": "^4.14.182",
     "react-easy-panzoom": "^0.4.4"
   }
 }
