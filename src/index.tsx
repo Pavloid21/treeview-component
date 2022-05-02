@@ -1,17 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import styles from './styles.module.css';
-import {PanZoom} from 'react-easy-panzoom';
+import { PanZoom } from 'react-easy-panzoom';
 import * as _ from 'lodash';
-import {TreeNode, TreeViewProps} from 'types';
+import { TreeNode, TreeViewProps } from 'types';
 
 class TreeView extends React.Component<TreeViewProps> {
   tree: TreeNode;
-  nodeView: any;
-  state: {columns: any[]; nodeReferencies: any[]};
+  nodeView: typeof React.Component;
+  state: { columns: (TreeNode | null)[][]; nodeReferencies: any[] };
   constructor(props: TreeViewProps) {
     super(props);
-    this.tree = {...props.tree};
+    this.tree = { ...props.tree };
     this.nodeView = props.nodeView;
     this.state = {
       ...TreeView.createColumnsData(this.tree),
@@ -19,9 +19,9 @@ class TreeView extends React.Component<TreeViewProps> {
   }
 
   static createColumnsData = (tree: TreeNode) => {
-    const columns: any[][] = [];
-    const nodeReferencies: {parent_node: string | undefined; node: any}[][] = [];
-    const newTree: TreeNode = {...tree};
+    const columns: (TreeNode | null)[][] = [];
+    const nodeReferencies: { parent_node: string | undefined; node: TreeNode | null }[][] = [];
+    const newTree: TreeNode = { ...tree };
     const treeWalker = (treeNode: TreeNode | null, column: number = 0, parent?: TreeNode) => {
       if (!columns[column]) {
         columns.push([]);
@@ -63,22 +63,22 @@ class TreeView extends React.Component<TreeViewProps> {
   drawCurves = () => {
     document.querySelectorAll(`div[class*="${styles.svg_container}"]`).forEach((e) => e.remove());
     const pipelineContainer: HTMLElement | null = document.getElementById('tree_wrapper');
-    const {nodeReferencies} = this.state;
-    this.state.columns.forEach((column: any[], id) => {
+    const { nodeReferencies } = this.state;
+    this.state.columns.forEach((column: (TreeNode | null)[], id: number) => {
       column.forEach((cell, index) => {
         if (id !== this.state.columns.length - 1) {
-          const cardElement: any = ReactDOM.findDOMNode(nodeReferencies[id][index].element);
-          const childrenElements: any[] = [];
-          this.state.columns[id + 1].map((child: {parent_node: any}, c: string | number) => {
-            if (child && child.parent_node === cell.node) {
+          const cardElement = ReactDOM.findDOMNode(nodeReferencies[id][index].element) as HTMLElement;
+          const childrenElements: HTMLElement[] = [];
+          this.state.columns[id + 1].map((child: TreeNode | null, c: number) => {
+            if (child && cell && child.parent_node === cell.node) {
               childrenElements.push(nodeReferencies[id + 1][c].element);
             }
           });
-          const coords: {x: any; y: any}[] = [];
+          const coords: { x: number; y: number }[] = [];
           if (childrenElements.length) {
             childrenElements.forEach((ce) => {
               if (ce) {
-                const domNode: any = ReactDOM.findDOMNode(ce);
+                const domNode = ReactDOM.findDOMNode(ce) as HTMLElement;
                 if (domNode)
                   coords.push({
                     x: domNode.offsetLeft,
@@ -94,26 +94,26 @@ class TreeView extends React.Component<TreeViewProps> {
                 const svgContainer = document.createElement('div');
                 svgContainer.setAttribute('class', styles.svg_container);
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                const checkPoints = coords.map((coord) => coord.y).concat(center);
+                const checkPoints: number[] = coords.map((coord) => coord.y).concat(center);
                 const height =
-                  _.max(checkPoints) - _.min(checkPoints) >= 12 ? _.max(checkPoints) - _.min(checkPoints) : 12;
+                  _.max(checkPoints)! - _.min(checkPoints)! >= 12 ? _.max(checkPoints)! - _.min(checkPoints)! : 12;
                 circle.setAttribute('width', '160');
                 circle.setAttribute('height', height.toString());
                 circle.setAttribute('viewBox', `0 0 160 ${height}`);
                 circle.setAttribute('version', '1.1');
                 circle.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
                 let sourcePositionY: number = 0;
-                if (Math.abs(_.min(checkPoints) - center) === height) {
+                if (Math.abs(_.min(checkPoints)! - center) === height) {
                   sourcePositionY = height - 6;
-                } else if (Math.abs(_.min(checkPoints) - center) < 6) {
+                } else if (Math.abs(_.min(checkPoints)! - center) < 6) {
                   sourcePositionY = 6;
                 } else {
-                  sourcePositionY = Math.abs(_.min(checkPoints) - center);
+                  sourcePositionY = Math.abs(_.min(checkPoints)! - center);
                 }
                 const lines = coords.map((coord) => {
                   const besie = `<path d="M 6, ${sourcePositionY} C 80, ${sourcePositionY}, 80, ${Math.abs(
-                    coord.y - _.min(checkPoints)
-                  )}, 160, ${Math.abs(coord.y - _.min(checkPoints))}" stroke="#C4C4C4" fill="none"/>`;
+                    coord.y - _.min(checkPoints)!
+                  )}, 160, ${Math.abs(coord.y - _.min(checkPoints)!)}" stroke="#C4C4C4" fill="none"/>`;
                   return besie;
                 });
                 circle.innerHTML = `
@@ -140,7 +140,7 @@ class TreeView extends React.Component<TreeViewProps> {
     this.drawCurves();
   }
 
-  static getDerivedStateFromProps(props: {tree: any}, state: any) {
+  static getDerivedStateFromProps(props: { tree: TreeNode }, state: { columns: (TreeNode | null)[][]; nodeReferencies: any[] }) {
     return {
       ...state,
       ...TreeView.createColumnsData(props.tree),
@@ -148,8 +148,8 @@ class TreeView extends React.Component<TreeViewProps> {
   }
 
   render() {
-    const {nodeView, emptyNode, nodeViewClasses, emptyNodeProps, showEmptyNodes, ...props} = this.props;
-    const {nodeReferencies, columns} = this.state;
+    const { nodeView, emptyNode, nodeViewClasses, emptyNodeProps, showEmptyNodes, ...props } = this.props;
+    const { nodeReferencies, columns } = this.state;
     const NodeView = nodeView;
     const EmptyNode = emptyNode;
     return (
@@ -157,10 +157,10 @@ class TreeView extends React.Component<TreeViewProps> {
         <div className={styles.tree} id="tree_wrapper">
           {columns.map((col, i) => {
             return col.length ? (
-              <div key={`id_${i}`} style={{display: 'flex'}}>
+              <div key={`id_${i}`} style={{ display: 'flex' }}>
                 <div className={styles.tree__column}>
-                  {col.map((item: any, idx: number) => {
-                    return Object.keys(item).length > 3 ? (
+                  {col.map((item: TreeNode | null, idx: number) => {
+                    return item !== null && Object.keys(item).length > 3 ? (
                       <NodeView
                         ref={(el) => (nodeReferencies[i][idx].element = el)}
                         key={`node_${i}${idx}`}

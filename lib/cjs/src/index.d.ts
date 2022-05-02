@@ -2,25 +2,34 @@ import React from 'react';
 import { TreeNode, TreeViewProps } from 'types';
 declare class TreeView extends React.Component<TreeViewProps> {
     tree: TreeNode;
-    nodeView: any;
+    nodeView: typeof React.Component;
     state: {
-        columns: any[];
+        columns: (TreeNode | null)[][];
         nodeReferencies: any[];
     };
     constructor(props: TreeViewProps);
     static createColumnsData: (tree: TreeNode) => {
-        columns: any[][];
+        columns: (TreeNode | null)[][];
         nodeReferencies: {
             parent_node: string | undefined;
-            node: any;
+            node: TreeNode | null;
         }[][];
     };
     drawCurves: () => void;
     componentDidMount(): void;
     componentDidUpdate(): void;
     static getDerivedStateFromProps(props: {
-        tree: any;
-    }, state: any): any;
+        tree: TreeNode;
+    }, state: {
+        columns: (TreeNode | null)[][];
+        nodeReferencies: any[];
+    }): {
+        columns: (TreeNode | null)[][];
+        nodeReferencies: {
+            parent_node: string | undefined;
+            node: TreeNode | null;
+        }[][];
+    };
     render(): JSX.Element;
 }
 export default TreeView;

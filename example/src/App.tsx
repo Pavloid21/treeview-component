@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
-import {TreeView, TreeNode, TreeViewProps} from 'treeview-component';
+import { TreeView, TreeNode, TreeViewProps } from 'treeview-component';
 import NodeView from './components/NodeView';
 import EmptyNode from './components/EmptyNode';
 import 'treeview-component/lib/esm/src/styles.module.css';
 import styles from './classes.module.css';
 
-class App extends React.Component<any, {tree: TreeNode}> {
-  constructor(props: any) {
+class App extends React.Component<PropsWithChildren<any>, { tree: TreeNode }> {
+  constructor(props: PropsWithChildren<any>) {
     super(props);
     this.state = {
       tree: {
@@ -35,15 +35,16 @@ class App extends React.Component<any, {tree: TreeNode}> {
     };
   }
 
-  addCardFunc = (node: { node: TreeNode; }, newTree: TreeNode) => {
+  addCardFunc = (node: TreeNode, newTree: TreeNode) => {
     let tree = newTree;
-    const walker = (cell: { children: any[]; node: string; }) => {
+    const walker = (cell: TreeNode | null) => {
       if (!cell) {
         return;
       }
-      cell.children.forEach((child, id) => {
-        if (child.node === node.node) {
+      cell.children.forEach((child: TreeNode | null, id: number) => {
+        if (child && child.node === node.node) {
           cell.children[id] = {
+            node: child.node,
             parent_node: cell.node,
             title: 'Added node',
             description: 'This node was added by click',
@@ -59,7 +60,7 @@ class App extends React.Component<any, {tree: TreeNode}> {
     });
   };
 
-  addCard = (event: MouseEvent, data: any) => {
+  addCard = (event: React.MouseEvent<HTMLElement, MouseEvent>, data: { node: TreeNode, newTree: TreeNode }) => {
     this.addCardFunc(data.node, data.newTree);
   };
 
